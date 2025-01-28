@@ -11,11 +11,19 @@ const ResultsView = () => {
   const results = [
     {
       id: '1',
-      studentName: 'Hestin  Mathew Xavier',
-      studentId: 'STDT17',
-      score: 15,
+      studentName: 'Alice Johnson',
+      studentId: 'CS2021001',
+      score: 85,
       totalQuestions: 20,
       submittedAt: '2024-03-15T10:30:00',
+    },
+    {
+      id: '2',
+      studentName: 'Bob Smith',
+      studentId: 'CS2021002',
+      score: 75,
+      totalQuestions: 20,
+      submittedAt: '2024-03-15T11:15:00',
     },
   ];
 

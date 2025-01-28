@@ -73,29 +73,29 @@ export const useTeacherStore = create<TeacherState>((set, get) => ({
   assignSubject: async (assignment) => {
     const state = get();
     
-    // Check if subject is already assigned
+    // Check if subject is already assigned, case insensitive check
     const isAssigned = state.isSubjectAssigned(
       assignment.subjectCode,
       assignment.department,
       assignment.semester,
       assignment.batch
     );
-
+  
     if (isAssigned) {
       throw new Error('This subject is already assigned to another teacher for the specified department, semester, and batch');
     }
-
+  
     // Check if teacher exists
     const teacher = state.teachers.find(t => t.id === assignment.teacherId);
     if (!teacher) {
       throw new Error('Teacher not found');
     }
-
+  
     const newAssignment: SubjectAssignment = {
       id: Date.now().toString(),
       ...assignment,
     };
-
+  
     set((state) => ({
       subjectAssignments: [...state.subjectAssignments, newAssignment],
     }));
@@ -118,10 +118,10 @@ export const useTeacherStore = create<TeacherState>((set, get) => ({
   isSubjectAssigned: (subjectCode, department, semester, batch) => {
     return get().subjectAssignments.some(
       (assignment) =>
-        assignment.subjectCode === subjectCode &&
-        assignment.department === department &&
+        assignment.subjectCode.toLowerCase() === subjectCode.toLowerCase() &&
+        assignment.department.toLowerCase() === department.toLowerCase() &&
         assignment.semester === semester &&
-        assignment.batch === batch
+        assignment.batch.toLowerCase() === batch.toLowerCase()
     );
   },
 }));

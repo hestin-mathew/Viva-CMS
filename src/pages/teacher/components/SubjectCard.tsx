@@ -1,18 +1,15 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Icons } from '../../../components/icons';
 import { SubjectAssignment } from '../../../types';
 
 interface SubjectCardProps {
   assignment: SubjectAssignment;
-  onGenerateQuestions: (id: string) => void;
-  onViewResults: (id: string) => void;
 }
 
-const SubjectCard: React.FC<SubjectCardProps> = ({
-  assignment,
-  onGenerateQuestions,
-  onViewResults,
-}) => {
+const SubjectCard: React.FC<SubjectCardProps> = ({ assignment }) => {
+  const navigate = useNavigate();
+
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
       <div className="p-6">
@@ -51,16 +48,16 @@ const SubjectCard: React.FC<SubjectCardProps> = ({
 
         <div className="mt-6 flex space-x-4">
           <button
-            onClick={() => onGenerateQuestions(assignment.id)}
+            onClick={() => navigate(`/teacher/subject/${assignment.id}/exam-setup`)}
             className="flex-1 px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-md hover:bg-indigo-100"
           >
-            Generate Questions
+            Setup Exam
           </button>
           <button
-            onClick={() => onViewResults(assignment.id)}
+            onClick={() => navigate('/teacher/questions')}
             className="flex-1 px-4 py-2 text-sm font-medium text-green-600 bg-green-50 rounded-md hover:bg-green-100"
           >
-            View Results
+            Generate Questions
           </button>
         </div>
       </div>

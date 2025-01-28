@@ -8,7 +8,7 @@ const ResultsView = () => {
   const results = [
     {
       id: '1',
-      subject: 'Computer Network',
+      subject: 'Data Structures Lab',
       teacher: 'Rajesh K R',
       score: 15,
       totalQuestions: 20,

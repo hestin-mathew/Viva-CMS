@@ -13,7 +13,7 @@ const ExamPortal = () => {
   const availableExams = [
     {
       id: '1',
-      subject: 'Computer Network',
+      subject: 'Data Structures Lab',
       teacher: 'Rajesh K R',
       totalQuestions: 20,
       duration: 60, // minutes
