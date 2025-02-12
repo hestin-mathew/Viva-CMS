@@ -10,6 +10,15 @@ interface SubjectCardProps {
 const SubjectCard: React.FC<SubjectCardProps> = ({ assignment }) => {
   const navigate = useNavigate();
 
+  const handleGenerateQuestions = () => {
+    navigate('/teacher/questions', {
+      state: {
+        subjectId: assignment.id,
+        subjectName: assignment.subjectName
+      }
+    });
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
       <div className="p-6">
@@ -54,7 +63,7 @@ const SubjectCard: React.FC<SubjectCardProps> = ({ assignment }) => {
             Setup Exam
           </button>
           <button
-            onClick={() => navigate('/teacher/questions')}
+            onClick={handleGenerateQuestions}
             className="flex-1 px-4 py-2 text-sm font-medium text-green-600 bg-green-50 rounded-md hover:bg-green-100"
           >
             Generate Questions

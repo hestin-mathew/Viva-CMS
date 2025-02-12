@@ -27,7 +27,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         ];
       case 'teacher':
         return [
-          { icon: BookOpen, label: 'Generate Questions', path: '/teacher/questions' },
+          { icon: BookOpen, label: 'Dashboard', path: '/teacher' },
           { icon: Users, label: 'View Results', path: '/teacher/results' },
         ];
       case 'student':

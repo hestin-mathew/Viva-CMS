@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { Question } from '../../../../types/exam';
 import { Icons } from '../../../../components/icons';
+import { useExamStore } from '../../../../store/examStore';
+import { useAuthStore } from '../../../../store/authStore';
+import { useTeacherStore } from '../../../../store/teacherStore';
 import toast from 'react-hot-toast';
 
 interface ExamDeploymentProps {
   selectedQuestions: Question[];
   subjectId: string;
-  onDeploy: (examData: any) => Promise<void>;
+  onDeploy: () => void;
 }
 
 const ExamDeployment: React.FC<ExamDeploymentProps> = ({
@@ -14,20 +17,30 @@ const ExamDeployment: React.FC<ExamDeploymentProps> = ({
   subjectId,
   onDeploy,
 }) => {
+  const { user } = useAuthStore();
+  const { deployExam } = useExamStore();
+  const { getTeacherAssignments } = useTeacherStore();
+  
+  const assignment = getTeacherAssignments(user!.id).find(a => a.id === subjectId);
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     duration_minutes: 60,
+    pass_percentage: 40,
     start_time: '',
     end_time: '',
-    batch: '',
-    semester: '1',
   });
 
-  const totalMarks = selectedQuestions.reduce((sum, q) => sum + (q.marks || 1), 0);
+  const totalMarks = selectedQuestions.reduce((sum, q) => sum + q.marks, 0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!assignment) {
+      toast.error('Subject assignment not found');
+      return;
+    }
 
     if (selectedQuestions.length === 0) {
       toast.error('Please select at least one question');
@@ -35,22 +48,35 @@ const ExamDeployment: React.FC<ExamDeploymentProps> = ({
     }
 
     try {
-      await onDeploy({
+      await deployExam({
         ...formData,
         subject_id: subjectId,
-        total_marks: totalMarks,
         questions: selectedQuestions,
+        total_marks: totalMarks,
+        batch: assignment.batch,
+        semester: assignment.semester, // Add semester from assignment
       });
+      
       toast.success('Exam deployed successfully');
+      onDeploy();
     } catch (error) {
-      toast.error('Failed to deploy exam');
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error('Failed to deploy exam');
+      }
     }
   };
 
   return (
     <div className="bg-white p-6 rounded-lg shadow">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-medium">Deploy Exam</h3>
+        <div>
+          <h3 className="text-lg font-medium">Deploy Exam</h3>
+          <p className="text-sm text-gray-500 mt-1">
+            {assignment?.subjectName} - Batch {assignment?.batch} - Semester {assignment?.semester}
+          </p>
+        </div>
         <div className="text-sm text-gray-500">
           Total Questions: {selectedQuestions.length} | Total Marks: {totalMarks}
         </div>
@@ -92,18 +118,16 @@ const ExamDeployment: React.FC<ExamDeploymentProps> = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Batch</label>
-            <select
+            <label className="block text-sm font-medium text-gray-700">Pass Percentage</label>
+            <input
+              type="number"
               required
-              value={formData.batch}
-              onChange={(e) => setFormData({ ...formData, batch: e.target.value })}
+              min="1"
+              max="100"
+              value={formData.pass_percentage}
+              onChange={(e) => setFormData({ ...formData, pass_percentage: parseInt(e.target.value) })}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            >
-              <option value="">Select Batch</option>
-              {['A', 'B', 'C', 'D'].map((batch) => (
-                <option key={batch} value={batch}>Batch {batch}</option>
-              ))}
-            </select>
+            />
           </div>
         </div>
 
@@ -129,20 +153,6 @@ const ExamDeployment: React.FC<ExamDeploymentProps> = ({
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             />
           </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Semester</label>
-          <select
-            required
-            value={formData.semester}
-            onChange={(e) => setFormData({ ...formData, semester: e.target.value })}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          >
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((sem) => (
-              <option key={sem} value={sem}>Semester {sem}</option>
-            ))}
-          </select>
         </div>
 
         <div className="flex justify-end">

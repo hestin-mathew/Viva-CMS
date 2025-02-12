@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { PlusCircle, Trash2 } from 'lucide-react';
+import { PlusCircle, Pencil, Trash2 } from 'lucide-react';
 import { useTeacherStore } from '../../store/teacherStore';
 import SubjectAssignmentForm from './components/SubjectAssignmentForm';
 import toast from 'react-hot-toast';
 
 const SubjectAssignment = () => {
   const [showAssignModal, setShowAssignModal] = useState(false);
+  const [editingAssignment, setEditingAssignment] = useState<any>(null);
   const { teachers, subjectAssignments, removeSubjectAssignment } = useTeacherStore();
 
   const handleRemoveAssignment = async (assignmentId: string) => {
@@ -98,13 +99,21 @@ const SubjectAssignment = () => {
                       {assignment.isLab ? 'Lab' : 'Theory'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button
-                      onClick={() => handleRemoveAssignment(assignment.id)}
-                      className="text-red-600 hover:text-red-900"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div className="flex space-x-3">
+                      <button
+                        onClick={() => setEditingAssignment(assignment)}
+                        className="text-indigo-600 hover:text-indigo-900"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleRemoveAssignment(assignment.id)}
+                        className="text-red-600 hover:text-red-900"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               );
@@ -113,8 +122,14 @@ const SubjectAssignment = () => {
         </table>
       </div>
 
-      {showAssignModal && (
-        <SubjectAssignmentForm onClose={() => setShowAssignModal(false)} />
+      {(showAssignModal || editingAssignment) && (
+        <SubjectAssignmentForm 
+          assignment={editingAssignment}
+          onClose={() => {
+            setShowAssignModal(false);
+            setEditingAssignment(null);
+          }} 
+        />
       )}
     </div>
   );

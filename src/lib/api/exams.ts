@@ -1,103 +1,73 @@
-import { supabase } from '../supabase';
-import { Question, Exam, ExamSubmission } from '../../types';
+import axios from 'axios';
+import { Question, Exam } from '../../types/exam';
 
-// Questions API
-export async function createQuestion(question: Omit<Question, 'id' | 'created_at'>) {
-  const { data, error } = await supabase
-    .from('questions')
-    .insert(question)
-    .select()
-    .single();
+const API_URL = 'http://localhost:5000/api';
 
-  if (error) throw new Error('Failed to create question');
+export async function createExam(examData: {
+  title: string;
+  description: string;
+  subjectId: string;
+  questions: Array<{ id: string; marks: number }>;
+  duration: number;
+  startTime: string;
+  endTime: string;
+  batch: string;
+}) {
+  const { data } = await axios.post(`${API_URL}/exams`, examData, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+  });
+  return data;
+}
+
+export async function getTeacherExams() {
+  const { data } = await axios.get(`${API_URL}/exams/teacher`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+  });
+  return data;
+}
+
+export async function getStudentExams() {
+  const { data } = await axios.get(`${API_URL}/exams/student`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+  });
+  return data;
+}
+
+export async function getActiveExamsForStudent(studentId: string) {
+  const { data } = await axios.get(`${API_URL}/exams/student/active`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+  });
+  return data;
+}
+
+export async function submitExam(examId: string, answers: Array<{
+  questionId: string;
+  selectedOption: number;
+}>) {
+  const { data } = await axios.post(`${API_URL}/exams/submit`, {
+    examId,
+    answers,
+  }, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+  });
   return data;
 }
 
 export async function getQuestions(subjectId: string) {
-  const { data, error } = await supabase
-    .from('questions')
-    .select('*')
-    .eq('subject_id', subjectId);
-
-  if (error) throw new Error('Failed to fetch questions');
-  return data;
-}
-
-// Exams API
-export async function createExam(exam: Omit<Exam, 'id' | 'created_at'>) {
-  const { data, error } = await supabase
-    .from('exams')
-    .insert(exam)
-    .select()
-    .single();
-
-  if (error) throw new Error('Failed to create exam');
-  return data;
-}
-
-export async function getExams(subjectId: string) {
-  const { data, error } = await supabase
-    .from('exams')
-    .select(`
-      *,
-      exam_questions (
-        question_id,
-        marks
-      )
-    `)
-    .eq('subject_id', subjectId);
-
-  if (error) throw new Error('Failed to fetch exams');
-  return data;
-}
-
-export async function getActiveExams(studentId: string) {
-  const { data, error } = await supabase
-    .from('exams')
-    .select(`
-      *,
-      exam_questions (
-        questions (
-          id,
-          text,
-          options
-        ),
-        marks
-      )
-    `)
-    .eq('is_active', true)
-    .gte('end_time', new Date().toISOString());
-
-  if (error) throw new Error('Failed to fetch active exams');
-  return data;
-}
-
-// Exam Submissions API
-export async function submitExam(submission: Omit<ExamSubmission, 'id' | 'created_at'>) {
-  const { data, error } = await supabase
-    .from('exam_submissions')
-    .insert(submission)
-    .select()
-    .single();
-
-  if (error) throw new Error('Failed to submit exam');
-  return data;
-}
-
-export async function getExamResults(examId: string) {
-  const { data, error } = await supabase
-    .from('exam_submissions')
-    .select(`
-      *,
-      students (
-        users (
-          name,
-          username
-        )
-      )
-    `)
-    .eq('exam_id', examId);
-
-  if (error) throw new Error('Failed to fetch exam results');
+  const { data } = await axios.get(`${API_URL}/questions/subject/${subjectId}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+  });
   return data;
 }

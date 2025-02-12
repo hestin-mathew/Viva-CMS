@@ -24,7 +24,6 @@ export interface Student {
   email: string;
   department: string;
   semester: string;
-  class: string;
   batch: string;
   hasSetPassword: boolean;
   password?: string;

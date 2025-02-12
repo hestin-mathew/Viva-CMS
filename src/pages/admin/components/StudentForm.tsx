@@ -19,7 +19,6 @@ const StudentForm: React.FC<StudentFormProps> = ({ student, onClose }) => {
     email: '',
     department: '',
     semester: '1',
-    class: '',
     batch: '',
     hasSetPassword: false,
   });
@@ -63,9 +62,6 @@ const StudentForm: React.FC<StudentFormProps> = ({ student, onClose }) => {
       setIsSubmitting(false);
     }
   };
-
-  const currentYear = new Date().getFullYear();
-  const batchYears = `${currentYear}-${currentYear + 4}`;
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
@@ -150,35 +146,22 @@ const StudentForm: React.FC<StudentFormProps> = ({ student, onClose }) => {
               </select>
             </div>
 
-            {/* Class */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Class</label>
-              <select
-                required
-                value={formData.class}
-                onChange={(e) => setFormData({ ...formData, class: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              >
-                <option value="">Select Class</option>
-                {['A', 'B', 'C', 'D'].map((cls) => (
-                  <option key={cls} value={cls}>
-                    {cls}
-                  </option>
-                ))}
-              </select>
-            </div>
-
             {/* Batch */}
             <div>
               <label className="block text-sm font-medium text-gray-700">Batch</label>
-              <input
-                type="text"
+              <select
                 required
-                value={formData.batch || batchYears}
+                value={formData.batch}
                 onChange={(e) => setFormData({ ...formData, batch: e.target.value })}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                placeholder="e.g., 2024-2028"
-              />
+              >
+                <option value="">Select Batch</option>
+                {['A', 'B', 'C', 'D'].map((batch) => (
+                  <option key={batch} value={batch}>
+                    {batch}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 

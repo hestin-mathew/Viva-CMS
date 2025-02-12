@@ -92,8 +92,7 @@ const QuestionSelection: React.FC<QuestionSelectionProps> = ({
           {filteredQuestions.map((question) => (
             <div
               key={question.id}
-              onClick={() => onSelectQuestion(question)}
-              className="p-4 border rounded-lg hover:border-indigo-500 cursor-pointer transition-colors"
+              className="p-4 border rounded-lg hover:border-indigo-500 transition-colors"
             >
               <p className="font-medium">{question.text}</p>
               <div className="mt-2 grid grid-cols-2 gap-2">
@@ -110,8 +109,16 @@ const QuestionSelection: React.FC<QuestionSelectionProps> = ({
                   </div>
                 ))}
               </div>
-              <div className="mt-2 text-sm text-gray-500">
-                <span className="capitalize">Difficulty: {question.difficulty}</span>
+              <div className="mt-2 flex items-center justify-between">
+                <span className="text-sm text-gray-500 capitalize">
+                  Difficulty: {question.difficulty}
+                </span>
+                <button
+                  onClick={() => onSelectQuestion(question)}
+                  className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
+                >
+                  Select Question
+                </button>
               </div>
             </div>
           ))}
