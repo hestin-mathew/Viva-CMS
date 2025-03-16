@@ -19,8 +19,15 @@ const SubjectCard: React.FC<SubjectCardProps> = ({ assignment }) => {
     });
   };
 
+  const handleViewSubject = () => {
+    navigate(`/teacher/subject/${assignment.id}`);
+  };
+
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+    <div 
+      className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+      onClick={handleViewSubject}
+    >
       <div className="p-6">
         <div className="flex items-start justify-between">
           <div>
@@ -51,19 +58,25 @@ const SubjectCard: React.FC<SubjectCardProps> = ({ assignment }) => {
           </div>
           <div className="flex items-center text-gray-600">
             <Icons.Users className="w-4 h-4 mr-2" />
-            <span>Batch {assignment.batch}</span>
+            <span>Class {assignment.class}</span>
           </div>
         </div>
 
         <div className="mt-6 flex space-x-4">
           <button
-            onClick={() => navigate(`/teacher/subject/${assignment.id}/exam-setup`)}
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/teacher/subject/${assignment.id}/exam-setup`);
+            }}
             className="flex-1 px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-md hover:bg-indigo-100"
           >
             Setup Exam
           </button>
           <button
-            onClick={handleGenerateQuestions}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleGenerateQuestions();
+            }}
             className="flex-1 px-4 py-2 text-sm font-medium text-green-600 bg-green-50 rounded-md hover:bg-green-100"
           >
             Generate Questions

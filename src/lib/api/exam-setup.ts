@@ -60,7 +60,7 @@ export async function getTeacherClasses(teacherId: string) {
     .from('subject_assignments')
     .select(`
       id,
-      batch,
+      class,
       subjects!inner(
         id,
         name,

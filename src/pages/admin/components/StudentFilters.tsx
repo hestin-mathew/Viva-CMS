@@ -3,8 +3,8 @@ import React from 'react';
 interface StudentFiltersProps {
   filters: {
     department: string;
-    year: string;
-    batch: string;
+    semester: string;
+    class: string;
   };
   onChange: (filters: any) => void;
 }
@@ -18,10 +18,8 @@ const StudentFilters: React.FC<StudentFiltersProps> = ({ filters, onChange }) =>
     'Electrical',
   ];
 
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 4 }, (_, i) => (currentYear - i).toString());
-
-  const batches = ['A', 'B', 'C', 'D'];
+  const semesters = Array.from({ length: 8 }, (_, i) => (i + 1).toString());
+  const classOptions = ['A', 'B', 'C', 'D'];
 
   return (
     <div className="bg-white p-4 rounded-lg shadow-sm space-y-4">
@@ -44,32 +42,32 @@ const StudentFilters: React.FC<StudentFiltersProps> = ({ filters, onChange }) =>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Year</label>
+          <label className="block text-sm font-medium text-gray-700">Semester</label>
           <select
-            value={filters.year}
-            onChange={(e) => onChange({ ...filters, year: e.target.value })}
+            value={filters.semester}
+            onChange={(e) => onChange({ ...filters, semester: e.target.value })}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           >
-            <option value="">All Years</option>
-            {years.map((year) => (
-              <option key={year} value={year}>
-                {year}
+            <option value="">All Semesters</option>
+            {semesters.map((sem) => (
+              <option key={sem} value={sem}>
+                Semester {sem}
               </option>
             ))}
           </select>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Batch</label>
+          <label className="block text-sm font-medium text-gray-700">Class</label>
           <select
-            value={filters.batch}
-            onChange={(e) => onChange({ ...filters, batch: e.target.value })}
+            value={filters.class}
+            onChange={(e) => onChange({ ...filters, class: e.target.value })}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           >
-            <option value="">All Batches</option>
-            {batches.map((batch) => (
-              <option key={batch} value={batch}>
-                Batch {batch}
+            <option value="">All Classes</option>
+            {classOptions.map((classOption) => (
+              <option key={classOption} value={classOption}>
+                Class {classOption}
               </option>
             ))}
           </select>

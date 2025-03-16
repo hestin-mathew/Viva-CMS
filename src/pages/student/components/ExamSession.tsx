@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuthStore } from '../../../store/authStore';
 import { useExamStore } from '../../../store/examStore';
 import ExamTimer from './ExamTimer';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Flag } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Exam, Question, QuestionStatus } from '../../../types/exam';
 
@@ -28,7 +28,10 @@ const ExamSession: React.FC<ExamSessionProps> = ({ exam, onClose }) => {
   };
 
   const handleFlagQuestion = () => {
-    setQuestionStatus(prev => ({ ...prev, [currentQuestion.id]: 'flagged' }));
+    setQuestionStatus(prev => ({
+      ...prev,
+      [currentQuestion.id]: prev[currentQuestion.id] === 'flagged' ? 'unanswered' : 'flagged'
+    }));
   };
 
   const handleSubmit = async () => {
@@ -168,9 +171,10 @@ const ExamSession: React.FC<ExamSessionProps> = ({ exam, onClose }) => {
               <div className="mt-6 space-y-4">
                 <button
                   onClick={handleFlagQuestion}
-                  className="w-full px-4 py-2 text-sm font-medium text-yellow-700 bg-yellow-100 rounded-md hover:bg-yellow-200"
+                  className="w-full flex items-center justify-center px-4 py-2 text-sm font-medium text-yellow-700 bg-yellow-100 rounded-md hover:bg-yellow-200"
                 >
-                  Flag for Review
+                  <Flag className="w-4 h-4 mr-2" />
+                  {questionStatus[currentQuestion.id] === 'flagged' ? 'Unflag Question' : 'Flag for Review'}
                 </button>
                 <button
                   onClick={handleSubmit}

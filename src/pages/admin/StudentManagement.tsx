@@ -10,16 +10,16 @@ const StudentManagement = () => {
   const [editingStudent, setEditingStudent] = useState<any>(null);
   const [filters, setFilters] = useState({
     department: '',
-    year: '',
-    batch: '',
+    semester: '',
+    class: '',
   });
 
   const { students } = useStudentStore();
 
   const filteredStudents = students.filter((student) => {
     if (filters.department && student.department !== filters.department) return false;
-    if (filters.year && student.batch.split('-')[0] !== filters.year) return false;
-    if (filters.batch && student.class !== filters.batch) return false;
+    if (filters.semester && student.semester !== filters.semester) return false;
+    if (filters.class && student.class !== filters.class) return false;
     return true;
   });
 
@@ -59,4 +59,4 @@ const StudentManagement = () => {
   );
 };
 
-export default StudentManagement;
+export default StudentManagement

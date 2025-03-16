@@ -11,7 +11,7 @@ export async function createExam(examData: {
   duration: number;
   startTime: string;
   endTime: string;
-  batch: string;
+  class: string;
 }) {
   const { data } = await axios.post(`${API_URL}/exams`, examData, {
     headers: {

@@ -4,6 +4,7 @@ import { Icons } from '../../../../components/icons';
 import { useExamStore } from '../../../../store/examStore';
 import { useAuthStore } from '../../../../store/authStore';
 import { useTeacherStore } from '../../../../store/teacherStore';
+import { useBatchStore } from '../../../../store/batchStore';
 import toast from 'react-hot-toast';
 
 interface ExamDeploymentProps {
@@ -20,8 +21,11 @@ const ExamDeployment: React.FC<ExamDeploymentProps> = ({
   const { user } = useAuthStore();
   const { deployExam } = useExamStore();
   const { getTeacherAssignments } = useTeacherStore();
+  const { getBatchAssignments } = useBatchStore();
   
   const assignment = getTeacherAssignments(user!.id).find(a => a.id === subjectId);
+  const batchAssignments = assignment ? getBatchAssignments(user!.id, subjectId, assignment.class) : [];
+  const availableBatches = Array.from(new Set(batchAssignments.map(a => a.batchNumber))).sort();
 
   const [formData, setFormData] = useState({
     title: '',
@@ -30,9 +34,19 @@ const ExamDeployment: React.FC<ExamDeploymentProps> = ({
     pass_percentage: 40,
     start_time: '',
     end_time: '',
+    selectedBatches: [] as number[],
   });
 
   const totalMarks = selectedQuestions.reduce((sum, q) => sum + q.marks, 0);
+
+  const handleBatchToggle = (batchNumber: number) => {
+    setFormData(prev => ({
+      ...prev,
+      selectedBatches: prev.selectedBatches.includes(batchNumber)
+        ? prev.selectedBatches.filter(b => b !== batchNumber)
+        : [...prev.selectedBatches, batchNumber],
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,16 +61,25 @@ const ExamDeployment: React.FC<ExamDeploymentProps> = ({
       return;
     }
 
+    if (formData.selectedBatches.length === 0) {
+      toast.error('Please select at least one batch');
+      return;
+    }
+
     try {
-      await deployExam({
+      const examData = {
         ...formData,
         subject_id: subjectId,
+        teacher_id: user!.id,
         questions: selectedQuestions,
         total_marks: totalMarks,
-        batch: assignment.batch,
-        semester: assignment.semester, // Add semester from assignment
-      });
-      
+        class: assignment.class,
+        semester: parseInt(assignment.semester.toString()),
+        is_active: true,
+        batches: formData.selectedBatches,
+      };
+
+      await deployExam(examData);
       toast.success('Exam deployed successfully');
       onDeploy();
     } catch (error) {
@@ -74,7 +97,7 @@ const ExamDeployment: React.FC<ExamDeploymentProps> = ({
         <div>
           <h3 className="text-lg font-medium">Deploy Exam</h3>
           <p className="text-sm text-gray-500 mt-1">
-            {assignment?.subjectName} - Batch {assignment?.batch} - Semester {assignment?.semester}
+            {assignment?.subjectName} - Class {assignment?.class} - Semester {assignment?.semester}
           </p>
         </div>
         <div className="text-sm text-gray-500">
@@ -155,10 +178,37 @@ const ExamDeployment: React.FC<ExamDeploymentProps> = ({
           </div>
         </div>
 
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Select Batches</label>
+          <div className="flex flex-wrap gap-2">
+            {availableBatches.length > 0 ? (
+              availableBatches.map((batch) => (
+                <button
+                  key={batch}
+                  type="button"
+                  onClick={() => handleBatchToggle(batch)}
+                  className={`px-4 py-2 rounded-md text-sm font-medium ${
+                    formData.selectedBatches.includes(batch)
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  Batch {batch}
+                </button>
+              ))
+            ) : (
+              <div className="text-sm text-yellow-600 bg-yellow-50 p-3 rounded-md w-full">
+                No batches have been created for this subject yet. Please create batches in the Batch Management section before deploying an exam.
+              </div>
+            )}
+          </div>
+        </div>
+
         <div className="flex justify-end">
           <button
             type="submit"
             className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+            disabled={availableBatches.length === 0}
           >
             <Icons.Upload className="w-4 h-4 mr-2" />
             Deploy Exam

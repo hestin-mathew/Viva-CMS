@@ -1,3 +1,5 @@
+import { Exam, ExamSubmission } from './exam';
+
 export interface User {
   id: string;
   username: string;
@@ -11,7 +13,6 @@ export interface Teacher {
   name: string;
   username: string;
   email: string;
-  department: string;
   subjects: string[];
   hasSetPassword: boolean;
   password?: string;
@@ -24,7 +25,7 @@ export interface Student {
   email: string;
   department: string;
   semester: string;
-  batch: string;
+  class: string;
   hasSetPassword: boolean;
   password?: string;
 }
@@ -45,6 +46,16 @@ export interface SubjectAssignment {
   subjectName: string;
   department: string;
   semester: number;
-  batch: string;
+  class: string;
   isLab: boolean;
+}
+
+export interface BatchAssignment {
+  id: string;
+  teacherId: string;
+  subjectId: string;
+  studentId: string;
+  class: string;
+  batchNumber: number;
+  createdAt: string;
 }

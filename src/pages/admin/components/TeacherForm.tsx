@@ -17,7 +17,6 @@ const TeacherForm: React.FC<TeacherFormProps> = ({ teacher, onClose }) => {
     name: '',
     username: '',
     email: '',
-    department: '',
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -28,7 +27,6 @@ const TeacherForm: React.FC<TeacherFormProps> = ({ teacher, onClose }) => {
         name: teacher.name,
         username: teacher.username,
         email: teacher.email,
-        department: teacher.department,
       });
     }
   }, [teacher]);
@@ -52,15 +50,6 @@ const TeacherForm: React.FC<TeacherFormProps> = ({ teacher, onClose }) => {
       setIsSubmitting(false);
     }
   };
-  
-
-  const departments = [
-    'Computer Science',
-    'Electronics',
-    'Mechanical',
-    'Civil',
-    'Electrical',
-  ];
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
@@ -106,23 +95,6 @@ const TeacherForm: React.FC<TeacherFormProps> = ({ teacher, onClose }) => {
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Department</label>
-            <select
-              required
-              value={formData.department}
-              onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            >
-              <option value="">Select Department</option>
-              {departments.map((dept) => (
-                <option key={dept} value={dept}>
-                  {dept}
-                </option>
-              ))}
-            </select>
-          </div>
-
           <div className="flex justify-end space-x-3 mt-4">
             <button
               type="button"
@@ -146,4 +118,4 @@ const TeacherForm: React.FC<TeacherFormProps> = ({ teacher, onClose }) => {
   );
 };
 
-export default TeacherForm;
+export default TeacherForm

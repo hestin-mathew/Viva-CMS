@@ -1,11 +1,12 @@
 import { create } from 'zustand';
 import { Exam, ExamSubmission } from '../types/exam';
+import { useBatchStore } from './batchStore';
 
 interface ExamState {
   exams: Exam[];
   submissions: ExamSubmission[];
-  deployExam: (examData: Omit<Exam, 'id'>) => void;
-  getExamsForStudent: (studentId: string, batch: string, semester: string) => {
+  deployExam: (examData: Omit<Exam, 'id'> & { batches: number[] }) => void;
+  getExamsForStudent: (studentId: string, class_: string, semester: string) => {
     activeExams: Exam[];
     attendedExams: Exam[];
   };
@@ -13,7 +14,7 @@ interface ExamState {
   hasStudentSubmittedExam: (examId: string, studentId: string) => boolean;
   getExamResults: (examId: string) => ExamSubmission[];
   getStudentResults: (studentId: string) => ExamSubmission[];
-  isDuplicateExam: (title: string, batch: string, semester: number) => boolean;
+  isDuplicateExam: (title: string, class_: string, semester: number) => boolean;
 }
 
 export const useExamStore = create<ExamState>((set, get) => ({
@@ -21,29 +22,47 @@ export const useExamStore = create<ExamState>((set, get) => ({
   submissions: [],
 
   deployExam: (examData) => {
-    const isDuplicate = get().isDuplicateExam(examData.title, examData.batch, examData.semester);
+    const isDuplicate = get().isDuplicateExam(examData.title, examData.class, examData.semester);
     if (isDuplicate) {
-      throw new Error('An exam with the same title already exists for this batch and semester');
+      throw new Error('An exam with the same title already exists for this class and semester');
     }
 
     const newExam: Exam = {
       id: Date.now().toString(),
       ...examData,
+      teacher_id: examData.teacher_id,
+      class: examData.class,
+      semester: examData.semester,
+      questions: examData.questions || [],
+      is_active: true,
+      start_time: new Date(examData.start_time).toISOString(),
+      end_time: new Date(examData.end_time).toISOString(),
+      batches: examData.batches,
     };
 
     set((state) => ({
       exams: [...state.exams, newExam],
     }));
+
+    return newExam;
   },
 
-  getExamsForStudent: (studentId, batch, semester) => {
+  getExamsForStudent: (studentId, class_, semester) => {
     const now = new Date();
     const { exams, submissions } = get();
+    const { getStudentBatch } = useBatchStore.getState();
     
-    const studentExams = exams.filter((exam) => 
-      exam.batch === batch && 
-      exam.semester.toString() === semester
-    );
+    const studentExams = exams.filter((exam) => {
+      const examStartTime = new Date(exam.start_time);
+      const examEndTime = new Date(exam.end_time);
+      const studentBatch = getStudentBatch(studentId, exam.subject_id);
+      
+      return exam.class === class_ && 
+             exam.semester.toString() === semester &&
+             exam.is_active === true &&
+             studentBatch !== null &&
+             exam.batches.includes(studentBatch);
+    });
 
     const hasSubmitted = (examId: string) => 
       submissions.some(s => s.examId === examId && s.studentId === studentId);
@@ -57,7 +76,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
                !hasSubmitted(exam.id);
       }),
       attendedExams: studentExams.filter(exam => 
-        hasSubmitted(exam.id)
+        hasSubmitted(exam.id) || new Date(exam.end_time) < now
       )
     };
   },
@@ -66,6 +85,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
     const submission: ExamSubmission = {
       id: Date.now().toString(),
       ...submissionData,
+      submittedAt: new Date().toISOString()
     };
 
     set((state) => ({
@@ -93,17 +113,20 @@ export const useExamStore = create<ExamState>((set, get) => ({
   getStudentResults: (studentId) => {
     const now = new Date();
     return get().submissions.filter(
-      (s) => 
-        s.studentId === studentId && 
-        new Date(get().exams.find(e => e.id === s.examId)?.end_time || '') <= now
+      (s) => {
+        const exam = get().exams.find(e => e.id === s.examId);
+        return s.studentId === studentId && 
+               exam && 
+               new Date(exam.end_time) <= now;
+      }
     );
   },
 
-  isDuplicateExam: (title, batch, semester) => {
+  isDuplicateExam: (title, class_, semester) => {
     return get().exams.some(
       exam => 
         exam.title.toLowerCase() === title.toLowerCase() &&
-        exam.batch === batch &&
+        exam.class === class_ &&
         exam.semester === semester
     );
   },

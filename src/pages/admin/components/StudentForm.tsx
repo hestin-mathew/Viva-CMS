@@ -19,7 +19,7 @@ const StudentForm: React.FC<StudentFormProps> = ({ student, onClose }) => {
     email: '',
     department: '',
     semester: '1',
-    batch: '',
+    class: '',
     hasSetPassword: false,
   });
 
@@ -146,19 +146,19 @@ const StudentForm: React.FC<StudentFormProps> = ({ student, onClose }) => {
               </select>
             </div>
 
-            {/* Batch */}
+            {/* Class */}
             <div>
-              <label className="block text-sm font-medium text-gray-700">Batch</label>
+              <label className="block text-sm font-medium text-gray-700">Class</label>
               <select
                 required
-                value={formData.batch}
-                onChange={(e) => setFormData({ ...formData, batch: e.target.value })}
+                value={formData.class}
+                onChange={(e) => setFormData({ ...formData, class: e.target.value })}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               >
-                <option value="">Select Batch</option>
-                {['A', 'B', 'C', 'D'].map((batch) => (
-                  <option key={batch} value={batch}>
-                    {batch}
+                <option value="">Select Class</option>
+                {['A', 'B', 'C', 'D'].map((classOption) => (
+                  <option key={classOption} value={classOption}>
+                    {classOption}
                   </option>
                 ))}
               </select>

@@ -17,9 +17,12 @@ export interface Exam {
   pass_percentage: number;
   start_time: string;
   end_time: string;
-  batch: string;
+  class: string;
   semester: number;
   questions: Question[];
+  batches: number[];
+  is_active: boolean;
+  teacher_id: string;
 }
 
 export interface ExamSubmission {

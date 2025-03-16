@@ -7,14 +7,14 @@ interface SubjectAssignmentFormProps {
 }
 
 const SubjectAssignmentForm: React.FC<SubjectAssignmentFormProps> = ({ onClose }) => {
-  const { teachers, assignSubject } = useTeacherStore();
+  const { teachers, assignSubject, isSubjectAssigned } = useTeacherStore();
   const [formData, setFormData] = useState({
     teacherId: '',
     subjectCode: '',
     subjectName: '',
     department: '',
     semester: '1',
-    batch: '',
+    class: '',
     isLab: false,
   });
 
@@ -30,6 +30,28 @@ const SubjectAssignmentForm: React.FC<SubjectAssignmentFormProps> = ({ onClose }
     e.preventDefault();
     
     try {
+      // Check if the subject is already assigned to this teacher
+      const isAssignedToTeacher = teachers.find(t => t.id === formData.teacherId)?.subjects
+        .includes(formData.subjectName);
+      
+      if (isAssignedToTeacher) {
+        toast.error('This subject is already assigned to this teacher');
+        return;
+      }
+
+      // Check if the subject is already assigned to another teacher for this class
+      const isAssignedToClass = isSubjectAssigned(
+        formData.subjectCode,
+        formData.department,
+        parseInt(formData.semester),
+        formData.class
+      );
+
+      if (isAssignedToClass) {
+        toast.error('This subject is already assigned to another teacher for this class');
+        return;
+      }
+
       await assignSubject({
         ...formData,
         semester: parseInt(formData.semester),
@@ -121,16 +143,16 @@ const SubjectAssignmentForm: React.FC<SubjectAssignmentFormProps> = ({ onClose }
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Batch</label>
+            <label className="block text-sm font-medium text-gray-700">Class</label>
             <select
               required
-              value={formData.batch}
-              onChange={(e) => setFormData({ ...formData, batch: e.target.value })}
+              value={formData.class}
+              onChange={(e) => setFormData({ ...formData, class: e.target.value })}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             >
-              <option value="">Select Batch</option>
-              {['A', 'B', 'C', 'D'].map((batch) => (
-                <option key={batch} value={batch}>Batch {batch}</option>
+              <option value="">Select Class</option>
+              {['A', 'B', 'C', 'D'].map((classOption) => (
+                <option key={classOption} value={classOption}>Class {classOption}</option>
               ))}
             </select>
           </div>

@@ -4,10 +4,10 @@ import { Icons } from '../../../components/icons';
 interface SubjectInfoProps {
   department: string;
   semester: number;
-  batch: string;
+  class: string;
 }
 
-const SubjectInfo: React.FC<SubjectInfoProps> = ({ department, semester, batch }) => {
+const SubjectInfo: React.FC<SubjectInfoProps> = ({ department, semester, class: classValue }) => {
   return (
     <div className="mt-6 grid grid-cols-3 gap-6">
       <div className="flex items-center text-gray-600">
@@ -20,7 +20,7 @@ const SubjectInfo: React.FC<SubjectInfoProps> = ({ department, semester, batch }
       </div>
       <div className="flex items-center text-gray-600">
         <Icons.Users className="w-5 h-5 mr-2" />
-        <span>Batch {batch}</span>
+        <span>Class {classValue}</span>
       </div>
     </div>
   );

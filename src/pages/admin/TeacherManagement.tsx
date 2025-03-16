@@ -25,8 +25,7 @@ const TeacherManagement = () => {
   const filteredTeachers = teachers.filter(
     (teacher) =>
       teacher.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      teacher.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      teacher.department.toLowerCase().includes(searchQuery.toLowerCase())
+      teacher.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -64,7 +63,6 @@ const TeacherManagement = () => {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
@@ -74,7 +72,6 @@ const TeacherManagement = () => {
                 <td className="px-6 py-4 whitespace-nowrap">{teacher.name}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{teacher.username}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{teacher.email}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{teacher.department}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex space-x-2">
                     <button

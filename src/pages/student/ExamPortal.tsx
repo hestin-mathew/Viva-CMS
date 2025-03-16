@@ -24,7 +24,7 @@ const ExamPortal = () => {
 
   const { activeExams, attendedExams } = getExamsForStudent(
     user!.id, 
-    currentStudent.batch,
+    currentStudent.class,
     currentStudent.semester
   );
 

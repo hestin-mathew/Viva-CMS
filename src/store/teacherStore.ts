@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Teacher, Subject, SubjectAssignment } from '../types';
+import { Teacher, SubjectAssignment } from '../types';
 import bcrypt from 'bcryptjs';
 
 interface TeacherState {
@@ -11,7 +11,7 @@ interface TeacherState {
   assignSubject: (assignment: Omit<SubjectAssignment, 'id'>) => Promise<void>;
   removeSubjectAssignment: (assignmentId: string) => Promise<void>;
   getTeacherAssignments: (teacherId: string) => SubjectAssignment[];
-  isSubjectAssigned: (subjectCode: string, department: string, semester: number, batch: string) => boolean;
+  isSubjectAssigned: (subjectCode: string, department: string, semester: number, class_: string) => boolean;
 }
 
 export const useTeacherStore = create<TeacherState>((set, get) => ({
@@ -40,10 +40,9 @@ export const useTeacherStore = create<TeacherState>((set, get) => ({
         teachers: [...state.teachers, newTeacher],
       }));
     } catch (error) {
-      throw error; // Propagate the error for the form to handle
+      throw error;
     }
   },
-  
 
   updateTeacher: async (id, teacherData) => {
     try {
@@ -73,16 +72,16 @@ export const useTeacherStore = create<TeacherState>((set, get) => ({
   assignSubject: async (assignment) => {
     const state = get();
     
-    // Check if subject is already assigned, case insensitive check
+    // Check if subject is already assigned
     const isAssigned = state.isSubjectAssigned(
       assignment.subjectCode,
       assignment.department,
       assignment.semester,
-      assignment.batch
+      assignment.class
     );
   
     if (isAssigned) {
-      throw new Error('This subject is already assigned to another teacher for the specified department, semester, and batch');
+      throw new Error('This subject is already assigned to another teacher for the specified department, semester, and class');
     }
   
     // Check if teacher exists
@@ -115,13 +114,13 @@ export const useTeacherStore = create<TeacherState>((set, get) => ({
     );
   },
 
-  isSubjectAssigned: (subjectCode, department, semester, batch) => {
+  isSubjectAssigned: (subjectCode, department, semester, class_) => {
     return get().subjectAssignments.some(
       (assignment) =>
         assignment.subjectCode.toLowerCase() === subjectCode.toLowerCase() &&
         assignment.department.toLowerCase() === department.toLowerCase() &&
         assignment.semester === semester &&
-        assignment.batch.toLowerCase() === batch.toLowerCase()
+        assignment.class.toLowerCase() === class_.toLowerCase()
     );
   },
 }));

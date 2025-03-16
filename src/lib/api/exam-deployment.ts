@@ -7,7 +7,7 @@ interface ExamDeploymentData {
   duration_minutes: number;
   start_time: string;
   end_time: string;
-  batch: string;
+  class: string;
   semester: string;
   subject_id: string;
   total_marks: number;
@@ -26,7 +26,7 @@ export async function deployExam(examData: ExamDeploymentData) {
       end_time: examData.end_time,
       subject_id: examData.subject_id,
       total_marks: examData.total_marks,
-      batch: examData.batch,
+      class: examData.class,
       semester: parseInt(examData.semester),
       is_active: true,
     })

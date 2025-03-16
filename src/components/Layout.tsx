@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
-import { LogOut, Menu, X, User as UserIcon, BookOpen, Users, GraduationCap } from 'lucide-react';
+import { LogOut, Menu, X, User as UserIcon, BookOpen, Users, GraduationCap, Layers } from 'lucide-react';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -28,6 +28,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       case 'teacher':
         return [
           { icon: BookOpen, label: 'Dashboard', path: '/teacher' },
+          { icon: Layers, label: 'Batch Management', path: '/teacher/batches' },
           { icon: Users, label: 'View Results', path: '/teacher/results' },
         ];
       case 'student':
